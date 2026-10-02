@@ -1,0 +1,619 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Heaviside — your Telegram friendships, seen clearly</title>
+<meta name="description" content="A desktop app for your Telegram account: every friendship grown into a tree from its own history, channels read as books, and the noise cleared in a click. Everything stays on your computer.">
+<link rel="icon" href="assets/logo.png">
+<style>
+@font-face { font-family: "Noto Sans"; src: url(fonts/NotoSans-Regular.ttf); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Noto Sans"; src: url(fonts/NotoSans-Medium.ttf); font-weight: 500; font-display: swap; }
+@font-face { font-family: "Noto Sans"; src: url(fonts/NotoSans-Bold.ttf); font-weight: 700; font-display: swap; }
+@font-face { font-family: "Charter"; src: url(fonts/HeavisideCharter-Italic.otf); font-style: italic; font-display: swap; }
+:root {
+  --ink: #e8eef8; --soft: #a9b6cc; --muted: #7384a0; --line: rgba(255,255,255,.09);
+  --night: #0b1422; --deep: #101d31; --card: rgba(255,255,255,.035);
+  --accent: #4f9cff; --accent-2: #7a7bff; --warm: #e8bf94; --leaf: #6fd39a;
+}
+* { box-sizing: border-box; margin: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: "Noto Sans", system-ui, sans-serif; color: var(--ink); background: var(--night); overflow-x: hidden; line-height: 1.5; }
+a { color: inherit; }
+img { max-width: 100%; display: block; }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 0 48px; }
+section { padding: 110px 0; position: relative; }
+.eyebrow { color: var(--warm); font-weight: 500; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; }
+h2 { font-size: clamp(30px, 3.6vw, 46px); line-height: 1.1; letter-spacing: -0.015em; margin: 12px 0 16px; }
+h2 i, h1 i { font-family: "Charter", serif; font-weight: 400; letter-spacing: 0; }
+h3 { font-size: 22px; line-height: 1.25; margin-bottom: 10px; }
+.lead { font-size: 18px; color: var(--soft); max-width: 42em; }
+p { color: var(--soft); }
+
+/* --- hero --------------------------------------------------------------------------------- */
+.sky {
+  position: relative; min-height: 100vh; display: flex; flex-direction: column;
+  background:
+    radial-gradient(1200px 600px at 78% 18%, rgba(79,156,255,.20), transparent 60%),
+    radial-gradient(900px 500px at 10% 0%, rgba(122,123,255,.16), transparent 60%),
+    linear-gradient(180deg, #0f2140 0%, var(--deep) 45%, var(--night) 100%);
+}
+nav { display: flex; align-items: center; gap: 28px; padding: 22px 48px; }
+.brand { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 19px; color: white; text-decoration: none; }
+.brand img { width: 34px; height: 34px; }
+nav .links { margin-left: auto; display: flex; gap: 26px; }
+nav .links a { color: var(--soft); text-decoration: none; font-size: 15px; }
+nav .links a:hover { color: white; }
+.hero { flex: 1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 56px; align-items: center;
+  padding: 24px 48px 0; max-width: 1400px; width: 100%; margin: 0 auto; }
+h1 { font-size: clamp(38px, 5vw, 64px); line-height: 1.05; letter-spacing: -0.02em; margin: 14px 0 20px; }
+h1 em { font-style: normal; background: linear-gradient(90deg, #8fc1ff, #b5a6ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.hero .lead { font-size: 19px; line-height: 1.55; max-width: 34em; }
+.actions { margin-top: 32px; display: flex; flex-direction: column; gap: 12px; max-width: 420px; }
+.download { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 16px 26px; border-radius: 14px;
+  font-weight: 700; font-size: 17px; color: white; text-decoration: none;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2)); box-shadow: 0 10px 30px rgba(79,156,255,.35); }
+.download:hover { filter: brightness(1.08); }
+.platforms { font-size: 13px; color: var(--muted); text-align: center; }
+.promise { margin-top: 26px; display: flex; flex-wrap: wrap; gap: 18px; color: var(--soft); font-size: 14px; }
+.promise span::before { content: "●"; color: var(--leaf); font-size: 9px; margin-right: 8px; vertical-align: 2px; }
+.shot { perspective: 1600px; }
+.shot img { width: 100%; border-radius: 16px; border: 1px solid rgba(255,255,255,.12);
+  box-shadow: 0 40px 90px rgba(0,0,0,.55), 0 0 0 1px rgba(79,156,255,.15), 0 0 120px rgba(79,156,255,.18);
+  transform: rotateY(-8deg) rotateX(3deg); transform-origin: left center; }
+.grove { position: relative; height: 190px; margin-top: 30px; overflow: hidden; }
+.grove::after { content: ""; position: absolute; left: 0; right: 0; bottom: 36px; height: 1px; background: linear-gradient(90deg, transparent, rgba(232,191,148,.35), transparent); }
+.grove .trees { position: absolute; left: 50%; bottom: 20px; transform: translateX(-50%); width: max-content; display: flex; align-items: flex-end; gap: 12px; }
+.grove img { height: 150px; } .grove img:nth-child(odd) { height: 128px; }
+
+/* --- the promise ------------------------------------------------------------------------------ */
+.pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 44px; }
+.pillar { padding: 28px; border-radius: 18px; background: var(--card); border: 1px solid var(--line); }
+.pillar svg { width: 30px; height: 30px; stroke: var(--warm); fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; margin-bottom: 16px; }
+.pillar p { font-size: 15px; }
+
+/* --- the eyes: a field of them, following you, closing over your history ---------------------------- */
+#privacy { overflow: hidden; }
+#privacy .wrap { position: relative; z-index: 1; }
+.eyefield { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.promise-head { max-width: 780px; }  /* the eyes fill the room beside it */
+.pair { position: absolute; display: flex; gap: var(--gap); }
+.eye { position: relative; width: var(--eye); height: var(--eye); border-radius: 50%; transition: transform .14s ease-in; }
+.pupil { position: absolute; left: 50%; top: 50%; width: var(--pupil); height: var(--pupil); margin: calc(var(--pupil) / -2);
+  border-radius: 50%; will-change: transform; }
+.eye.blink { transform: scaleY(.1); }
+/* Closed: the white goes, and a soft lid-line stays, curving down like eyes closed in peace. */
+.eye::after { content: ""; position: absolute; left: 8%; right: 8%; top: 30%; height: 38%; border-radius: 0 0 50% 50% / 0 0 100% 100%;
+  border-bottom: calc(2px * var(--s, 1)) solid #f1ece2; opacity: 0; transition: opacity .18s; }
+.eyefield.shut .eye { background: transparent; }
+.eyefield.shut .eye::after { opacity: 1; transition-delay: .06s; }
+.eyefield.shut .pupil { opacity: 0; }
+.pupil { transition: opacity .12s; }
+/* Ivory eyes, dark pupils; in the dark until the cursor comes near. */
+.pair { --eye: calc(22px * var(--s, 1)); --pupil: calc(9px * var(--s, 1)); --gap: calc(5px * var(--s, 1)); opacity: .1; will-change: transform, opacity; }
+.eye { background: #f1ece2; } .pupil { background: #0b1422; }
+.wink { font-family: "Charter", serif; font-style: italic; font-size: 20px; color: var(--warm); height: 30px; margin-top: 18px;
+  opacity: 0; transform: translateY(4px); transition: opacity .3s, transform .3s; }
+.wink.show { opacity: 1; transform: none; }
+.grove img { transform-origin: 50% 96%; will-change: transform; }
+
+/* --- feature rows ------------------------------------------------------------------------------ */
+.rows { display: flex; flex-direction: column; gap: 96px; margin-top: 64px; }
+.row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr); gap: 56px; align-items: center; }
+.row.flip { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); }
+.row.flip .text { order: 2; }
+.row .text p { font-size: 16px; margin-bottom: 12px; }
+.row .text .tag { display: inline-block; font-size: 12px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--leaf); margin-bottom: 8px; }
+.frame img { border-radius: 14px; border: 1px solid rgba(255,255,255,.10); box-shadow: 0 30px 70px rgba(0,0,0,.5), 0 0 80px rgba(79,156,255,.10); }
+.frame.bare img { border: 0; box-shadow: none; border-radius: 0; }
+.frame.rings img { aspect-ratio: 5 / 4; object-fit: cover; -webkit-mask-image: radial-gradient(ellipse 50% 60% at 50% 50%, #000 55%, transparent 100%); mask-image: radial-gradient(ellipse 50% 60% at 50% 50%, #000 55%, transparent 100%); }
+.more { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 80px; }
+.more div { padding: 20px; border-radius: 14px; background: var(--card); border: 1px solid var(--line); }
+.more b { display: block; margin-bottom: 6px; } .more p { font-size: 14px; }
+
+/* --- research ---------------------------------------------------------------------------------- */
+.research { background: linear-gradient(180deg, transparent, rgba(79,156,255,.05), transparent); }
+.paper { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; margin-top: 40px; }
+.claims li { list-style: none; padding: 16px 0; border-bottom: 1px solid var(--line); color: var(--soft); }
+.claims li b { color: var(--ink); font-weight: 500; }
+.claims { padding: 0; }
+.refs { padding: 26px; border-radius: 18px; background: var(--card); border: 1px solid var(--line); font-size: 14px; }
+.refs h3 { font-size: 16px; }
+.refs li { margin: 10px 0 10px 18px; color: var(--soft); }
+.refs a { color: #8fc1ff; text-decoration: none; } .refs a:hover { text-decoration: underline; }
+
+/* --- reader ------------------------------------------------------------------------------------ */
+.stack { position: relative; padding-bottom: 60px; }
+.stack img:first-child { width: 88%; }
+.stack img:last-child { position: absolute; right: 0; bottom: 0; width: 62%; }
+
+/* --- tools ------------------------------------------------------------------------------------- */
+.tools { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 44px; }
+.tool { border-radius: 18px; background: var(--card); border: 1px solid var(--line); overflow: hidden; }
+.tool .pic { aspect-ratio: 16 / 10; overflow: hidden; border-bottom: 1px solid var(--line); }
+.tool .pic img { width: 185%; max-width: none; }  /* the top-left of the page, near enough to read */
+.tool div { padding: 22px; } .tool p { font-size: 15px; }
+
+/* --- download ---------------------------------------------------------------------------------- */
+.get { text-align: center; background: radial-gradient(900px 400px at 50% 0%, rgba(79,156,255,.14), transparent 70%); }
+.get .lead { margin: 0 auto; }
+.systems { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin: 44px auto 0; max-width: 980px; }
+.system { padding: 28px 24px; border-radius: 18px; background: var(--card); border: 1px solid var(--line); text-align: left;
+  display: flex; flex-direction: column; }
+.system h3 { font-size: 19px; margin-bottom: 6px; }
+.system p { font-size: 14px; margin-bottom: 18px; min-height: 42px; }
+.system > a { margin-top: auto; display: block; text-align: center; padding: 12px; border-radius: 12px; font-weight: 700; font-size: 15px; text-decoration: none; color: white;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+.beta { margin-top: 26px; font-size: 14px; color: var(--muted); }
+.system p a { color: var(--accent); text-decoration: none; }
+.system p a:hover { text-decoration: underline; }
+.news { margin: 30px auto 0; display: inline-flex; align-items: center; gap: 10px; padding: 12px 18px; border-radius: 999px; border: 1px solid var(--line); color: var(--soft); font-size: 14px; }
+.news a { color: inherit; text-decoration: none; }
+.news a:hover { color: var(--ink); }
+
+/* --- questions --------------------------------------------------------------------------------- */
+.faq { max-width: 860px; margin: 40px auto 0; }
+details { border-bottom: 1px solid var(--line); padding: 20px 0; }
+summary { cursor: pointer; font-weight: 500; font-size: 18px; list-style: none; display: flex; justify-content: space-between; gap: 20px; }
+summary::after { content: "+"; color: var(--warm); font-size: 22px; line-height: 1; }
+details[open] summary::after { content: "–"; }
+details p { margin-top: 12px; font-size: 16px; }
+
+footer { border-top: 1px solid var(--line); padding: 40px 0 50px; color: var(--muted); font-size: 13px; }
+footer .wrap { display: flex; flex-wrap: wrap; gap: 20px 40px; justify-content: space-between; align-items: center; }
+footer .brand { font-size: 16px; } footer .brand img { width: 26px; height: 26px; }
+
+@media (max-width: 960px) {
+  .wrap { padding: 0 16px; } section { padding: 72px 0; }
+  nav { padding: 18px 16px; } nav .links { display: none; }
+  .hero { grid-template-columns: 1fr; padding: 8px 16px 0; gap: 36px; }
+  .shot img { transform: none; }
+  .grove img { height: 96px; } .grove img:nth-child(odd) { height: 80px; }
+  .pillars, .tools, .systems, .paper { grid-template-columns: 1fr; }
+  #privacy .pillars { margin-top: 170px; }  /* the band where the eyes stand, under the heading */
+  .row, .row.flip { grid-template-columns: 1fr; gap: 24px; } .row.flip .text { order: 0; }
+  .rows { gap: 64px; }
+  .more { grid-template-columns: 1fr 1fr; }
+  .stack img:first-child { width: 100%; } .stack img:last-child { position: static; width: 80%; margin: -30px 0 0 auto; }
+}
+</style>
+</head>
+<body>
+
+<!-- 1 · hero -->
+<div class="sky">
+  <nav>
+    <a class="brand" href="#"><img src="assets/logo.png" alt="">Heaviside</a>
+    <div class="links"><a href="#friendship">Friendship</a><a href="#reader">Reader</a><a href="#privacy">Privacy</a><a href="#download">Download</a></div>
+  </nav>
+  <section class="hero">
+    <div>
+      <div class="eyebrow">For your Telegram account · beta</div>
+      <h1>Your friendships,<br><em>seen clearly.</em></h1>
+      <p class="lead">Heaviside grows every private chat into a tree from its own history — who's drifting, who needs a word,
+        who's always there. It reads channels as books and clears the noise in a click. All of it on your computer; nothing leaves it.</p>
+      <div class="actions">
+        <a class="download" href="#download">⤓ Download the beta</a>
+        <div class="platforms">Windows · macOS · Linux — free, in beta</div>
+      </div>
+      <div class="promise"><span>No account with us</span><span>No servers</span><span>No AI reads your chats</span></div>
+    </div>
+    <div class="shot"><img src="assets/app-garden.png" alt="The Garden: every friendship as a tree, in the bed its history puts it in"></div>
+  </section>
+  <div class="grove" aria-hidden="true"><div class="trees">
+    <img src="assets/tree-new.png" alt=""><img src="assets/tree-blooming.png" alt=""><img src="assets/tree-family.png" alt="">
+    <img src="assets/tree-fading.png" alt=""><img src="assets/tree-thirsty.png" alt=""><img src="assets/tree-passing.png" alt="">
+    <img src="assets/tree-resting.png" alt=""><img src="assets/tree-gone.png" alt="">
+  </div></div>
+</div>
+
+<!-- 2 · the promise -->
+<section id="privacy">
+  <div class="eyefield" id="eyefield" aria-hidden="true"></div>
+  <div class="wrap">
+    <div class="promise-head">
+      <div class="eyebrow">The promise</div>
+      <h2>Your history stays <i>yours.</i></h2>
+      <p class="lead">Heaviside keeps a copy of your chats in a database on your own computer and works everything out there.
+        The only thing it ever talks to is Telegram.</p>
+      <p class="wink" id="wink" aria-hidden="true">We don't look. Promise.</p>
+    </div>
+    <div class="pillars">
+      <div class="pillar">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/><path d="M3 3l18 18"/></svg>
+        <h3>No account with us</h3>
+        <p>You sign in to Telegram with your phone number, as in Telegram's own apps. There's no Heaviside account, no sign-up, nothing to hand over.</p>
+      </div>
+      <div class="pillar">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>
+        <h3>Nothing leaves your computer</h3>
+        <p>No servers of ours, no analytics, no crash reports sent anywhere. Even the log of what went wrong stays on your machine for you to share, or not.</p>
+      </div>
+      <div class="pillar">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        <h3>Timing, never words</h3>
+        <p>The friendship models read only who wrote and when. No AI reads your messages — the words are only counted, never interpreted.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 · friendship -->
+<section id="friendship">
+  <div class="wrap">
+    <div class="eyebrow">Friendship</div>
+    <h2>The reason Heaviside exists.</h2>
+    <p class="lead">Friendships rarely end in an argument. They end in silences nobody chose. Heaviside shows you where each one stands,
+      so you notice before the silence becomes the story.</p>
+    <div class="rows">
+      <div class="row">
+        <div class="text">
+          <span class="tag">Garden</span>
+          <h3>Every friendship, a tree grown from its own history.</h3>
+          <p>The trunk is as broad as the years you've known each other, each branch a year, the crown as full as the last three months.
+            The season says where it stands: blooming, needs water, fading, resting — or, for someone gone, a moss-grown stump kept as a memory.</p>
+          <p>Water a friendship from its card, and the tree shows whether they answered.</p>
+        </div>
+        <div class="frame"><img src="assets/app-garden-work.png" alt="The Garden page" loading="lazy"></div>
+      </div>
+      <div class="row flip">
+        <div class="text">
+          <span class="tag">Circles</span>
+          <h3>Your closest five, fifteen and fifty.</h3>
+          <p>Everyone you talk with, in rings by how many days you've been in touch over the past year — the circles the anthropologist
+            Robin Dunbar found in every human network. Drag the slider back a quarter at a time and watch people move between them.</p>
+        </div>
+        <div class="frame bare rings"><img src="assets/circles-rings.png" alt="Circles: rings of closeness" loading="lazy"></div>
+      </div>
+      <div class="row">
+        <div class="text">
+          <span class="tag">Magnetism</span>
+          <h3>Whose messages bring you straight back.</h3>
+          <p>How much you talk with someone is one thing. How strongly a message from them draws you back to the chat is another.
+            Magnetism maps both — the quiet friend you always answer at once, and the busy chat you mostly answer from habit.</p>
+        </div>
+        <div class="frame"><img src="assets/app-magnetism-work.png" alt="The Magnetism map" loading="lazy"></div>
+      </div>
+      <div class="row flip">
+        <div class="text">
+          <span class="tag">Wrapped</span>
+          <h3>Your year in chats, told as a story.</h3>
+          <p>Eleven slides: the people you talked with most, the friend you found, the one you drifted from, your longest streak,
+            the hour you're most alive. Save any slide as a picture — it's yours to share, or to keep.</p>
+        </div>
+        <div class="frame bare"><img src="assets/wrapped-slide.png" alt="A Wrapped slide: your top five" loading="lazy"></div>
+      </div>
+      <div class="row">
+        <div class="text">
+          <span class="tag">One page per person</span>
+          <h3>A friendship, on one page.</h3>
+          <p>Their tree, where you stand, your circle quarter by quarter, how you talk and when, and the milestones along the way.
+            For someone no longer in your life, it reads as a memory.</p>
+        </div>
+        <div class="frame"><img src="assets/app-person-work.png" alt="A person's page" loading="lazy"></div>
+      </div>
+    </div>
+    <div class="more">
+      <div><b>Habits</b><p>Awards for how everyone chats — the Flash, the Double-Texter, the Night Owl. You're in the running too.</p></div>
+      <div><b>Chemistry</b><p>Who you're most in step with: the same hours, answers as quick, messages as long.</p></div>
+      <div><b>River</b><p>Your closest friendships as streams through the months, swelling and thinning.</p></div>
+      <div><b>Trends</b><p>Messages sent and received over time, who's rising, who's fading, who's gone quiet.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 · research -->
+<section class="research">
+  <div class="wrap">
+    <div class="eyebrow">Built on research</div>
+    <h2>Measured, not <i>guessed.</i></h2>
+    <p class="lead">Every verdict in the garden comes from published work on how relationships grow and fade — and each rule was
+      checked against what real chats actually did next, before it was allowed into the app.</p>
+    <div class="paper">
+      <ul class="claims">
+        <li><b>Closeness</b> — rings of about 5, 15, 50 and 150, measured in days in contact, as Dunbar's layers are.</li>
+        <li><b>Silences</b> — how often a silence this long ever ended, across all your chats: a survival estimate, and a verdict like
+          <i>gone</i> only on enough evidence.</li>
+        <li><b>Fading</b> — change points in how much you talk, so the garden can say not just <i>that</i> a friendship is fading, but since when.</li>
+        <li><b>Family</b> is different: kin don't drift apart through silence the way friends do, so family never wilts.</li>
+        <li><b>Magnetism</b> — a relational event model: each time you write, why that chat, out of all you could have written to.</li>
+      </ul>
+      <div class="refs">
+        <h3>Some of the papers behind it</h3>
+        <ul>
+          <li>Hill, R. A. &amp; Dunbar, R. I. M. (2003). Social network size in humans. <i>Human Nature</i>.</li>
+          <li>Roberts, S. G. B. &amp; Dunbar, R. I. M. (2011). <a href="https://www.sciencedirect.com/science/article/abs/pii/S1090513810000966">The costs of family and friends</a>. <i>Evolution and Human Behavior</i>.</li>
+          <li>Burt, R. S. (2000). <a href="http://ronaldsburt.com/research/files/DF.pdf">Decay functions</a>. <i>Social Networks</i>.</li>
+          <li>Killick, R., Fearnhead, P. &amp; Eckley, I. A. (2012). Optimal detection of changepoints with a linear computational cost. <i>JASA</i>.</li>
+          <li>Butts, C. T. (2008). A relational event framework for social action. <i>Sociological Methodology</i>.</li>
+          <li>Perry, P. O. &amp; Wolfe, P. J. (2013). Point process modelling for directed interaction networks. <i>JRSS B</i>.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 · reader -->
+<section id="reader">
+  <div class="wrap row flip" style="align-items:center">
+    <div class="text">
+      <div class="eyebrow">Reader</div>
+      <h2>A channel, read as the <i>blog</i> it was written as.</h2>
+      <p class="lead" style="font-size:17px">The author's hashtags become categories. Long pieces published in parts — Telegram caps a post at 4,096
+        characters — are put back together and read as one article, in a measured column with a real reading face, night, sepia or day.</p>
+      <p style="margin-top:14px">Highlight any words, write notes on them, keep pieces for later, export to HTML, Markdown or PDF.
+        Four Persian reading faces are built in, and right-to-left text is set paragraph by paragraph.</p>
+    </div>
+    <div class="stack">
+      <img class="frame" src="assets/app-reader-work.png" alt="A channel in the Reader" loading="lazy" style="border-radius:14px;border:1px solid rgba(255,255,255,.1);box-shadow:0 30px 70px rgba(0,0,0,.5)">
+      <img src="assets/app-article-work.png" alt="A three-part piece read as one article" loading="lazy" style="border-radius:14px;border:1px solid rgba(255,255,255,.14);box-shadow:0 30px 70px rgba(0,0,0,.6)">
+    </div>
+  </div>
+</section>
+
+<!-- 6 · account tools -->
+<section>
+  <div class="wrap">
+    <div class="eyebrow">Your account, tidied</div>
+    <h2>The noise, cleared in a <i>click.</i></h2>
+    <p class="lead">A manager for your account, not another chat app: pick chats, and act on all of them at once.</p>
+    <div class="tools">
+      <div class="tool"><div class="pic"><img src="assets/app-bulk-work.png" alt="Inactive groups, ticked, with the bulk-action bar" loading="lazy"></div>
+        <div><h3>Bulk actions</h3><p>Leave forty dead groups, mute every channel, mark everything read. You see what will happen first, it goes at a safe pace, and most of it can be undone.</p></div></div>
+      <div class="tool"><div class="pic"><img src="assets/app-search-work.png" alt="Searching every saved message" loading="lazy"></div>
+        <div><h3>Search everything</h3><p>Every saved message, instantly and offline — phrases, exclusions, by chat, sender and date, with Persian and Arabic spellings folded together.</p></div></div>
+      <div class="tool"><div class="pic"><img src="assets/app-feed-work.png" alt="Many channels read as one feed" loading="lazy"></div>
+        <div><h3>Feed and collections</h3><p>Read many channels as one stream, group chats your own way, and let <i>Worth a look</i> find the quiet channels and inactive groups for you.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 · download -->
+<section id="download" class="get">
+  <div class="wrap">
+    <div class="eyebrow">Download · <span data-version>1.0.0-beta.1</span></div>
+    <h2>Try the beta.</h2>
+    <p class="lead">Free. The first time, you make your own Telegram API keys — about two minutes, and the app shows you how.
+      After that, signing in takes only your phone number.</p>
+    <div class="systems">
+      <div class="system"><h3>Windows</h3><p>Installer, or a <a href="https://github.com/1elmomento/heaviside-release/releases/download/v1.0.0-beta.1/Heaviside-1.0.0-beta.1-Windows-portable.zip" data-download="windows-zip">portable zip</a> that runs without installing.</p><a href="https://github.com/1elmomento/heaviside-release/releases/download/v1.0.0-beta.1/Heaviside-1.0.0-beta.1-Setup.exe" data-download="windows">Download for Windows</a></div>
+      <div class="system"><h3>macOS</h3><p>For Macs with Apple chips (M1 and later). Open the disk image and drag Heaviside to Applications.</p><a href="https://github.com/1elmomento/heaviside-release/releases/download/v1.0.0-beta.1/Heaviside-1.0.0-beta.1-macOS-AppleSilicon.dmg" data-download="macos">Download for macOS</a></div>
+      <div class="system"><h3>Linux</h3><p>A Debian package for Debian 12 and later, and Ubuntu 24.04 and later.</p><a href="https://github.com/1elmomento/heaviside-release/releases/download/v1.0.0-beta.1/Heaviside-1.0.0-beta.1-Debian-amd64.deb" data-download="linux">Download for Linux</a></div>
+    </div>
+    <p class="beta">It's a beta: things may break, and your feedback shapes what comes next.</p>
+    <div class="news"><a href="https://github.com/1elmomento/heaviside-release/releases">Every version, and what changed</a></div>
+  </div>
+</section>
+
+<!-- 8 · questions -->
+<section>
+  <div class="wrap">
+    <div class="eyebrow" style="text-align:center">Questions</div>
+    <h2 style="text-align:center">Before you download</h2>
+    <div class="faq">
+      <details><summary>Is it safe for my Telegram account?</summary>
+        <p>Heaviside signs in once, like Telegram's own apps, and reuses that session rather than signing in again. It paces every request
+          it makes, asks Telegram only for what the saved copy can't answer, and anything that changes your account — leaving, muting,
+          marking as read — shows you what will happen and asks first.</p></details>
+      <details><summary>Does anything get sent anywhere?</summary>
+        <p>No. Your history is saved in a database on your computer, and the friendship models are worked out there. The app talks to
+          Telegram and nothing else: no servers of ours, no analytics, no tracking.</p></details>
+      <details><summary>Does it read my messages?</summary>
+        <p>The friendship models use only who wrote and when. Some counts — words, emoji, laughs — are taken from the text on your computer
+          for the Habits awards, and only the counts are kept. No AI reads your messages, here or anywhere.</p></details>
+      <details><summary>Will it work where Telegram is blocked?</summary>
+        <p>Turn on your VPN. Heaviside tries every way to Telegram at once — your system's proxy settings, a VPN app's local proxy
+          (v2rayN, Nekoray, Hiddify, Clash), or a direct connection through a VPN that carries all traffic — and uses the first that answers.
+          You can also set a proxy of your own.</p></details>
+      <details><summary>Why does it ask for API keys?</summary>
+        <p>Telegram asks every app that works with an account for keys of its own. You make yours once at my.telegram.org, in about
+          two minutes, and the sign-in screen shows you each step. They stay on your computer; after that, signing in takes only your
+          phone number.</p></details>
+      <details><summary>Windows or macOS warns me when I open it</summary>
+        <p>The beta isn't signed with a paid certificate yet, so the system can't vouch for it. On Windows, choose <b>More info</b>, then
+          <b>Run anyway</b>. On a Mac, open it once, then go to System Settings → Privacy &amp; Security and choose <b>Open Anyway</b>.</p></details>
+      <details><summary>What will it cost?</summary>
+        <p>Nothing. Heaviside is free: no paid version, no account with us, no ads.</p></details>
+      <details><summary>Is Heaviside made by Telegram?</summary>
+        <p>No. It's an independent app that uses Telegram's public API to work with your own account. It isn't made or endorsed by Telegram.</p></details>
+      <details><summary>Why "Heaviside"?</summary>
+        <p>After Oliver Heaviside, who worked out the mathematics of the telegraph line — how a signal keeps its shape over a long wire.
+          The logo's crossbar is his step function.</p></details>
+    </div>
+  </div>
+</section>
+
+<!-- 9 · footer -->
+<footer>
+  <div class="wrap">
+    <a class="brand" href="#"><img src="assets/logo.png" alt="">Heaviside</a>
+    <span>An independent app. Not made or endorsed by Telegram.</span>
+    <span>Fonts: Noto Sans and Charter, under their open licences.</span>
+    <span>© 2026 Heaviside</span>
+  </div>
+</footer>
+<script>
+// Something alive: a field of eyes that follow you and close over your history, and trees that lean toward
+// you like plants toward the sun. Decorative only; nothing is recorded or sent. Still for anyone who asked
+// for less motion, and idle while out of sight.
+(() => {
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const touch = matchMedia("(hover: none)").matches;
+  const FOLLOW_TOUCH = 2500;  // ms a touch is followed before the eyes look about again
+  const pointer = { cx: innerWidth / 2, cy: innerHeight / 3, seen: false, at: -1e9 };  // client coordinates
+  const lerp = (a, b, t) => a + (b - a) * t;
+
+  // --- the eyes -----------------------------------------------------------------------------------
+  const section = document.getElementById("privacy");
+  const field = document.getElementById("eyefield");
+  const wink = document.getElementById("wink");
+  const pillars = section.querySelector(".pillars");
+  const FLEE = 150, PUSH = 90;  // px: how near the cursor may come before a pair runs, and how far it runs
+  let eyes = [], pairs = [], room = null;
+
+  // Pairs scattered at random in the room beside the heading (on a phone, in a band under it), never on the
+  // words, never crowding each other, a little different in size. Seeded, so the page shows the same crowd.
+  function plant() {
+    field.innerHTML = "";
+    eyes = []; pairs = [];
+    let seed = 20260930;
+    const random = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+    const home = section.getBoundingClientRect();
+    const rel = el => { const r = el.getBoundingClientRect();
+      return { l: r.left - home.left, t: r.top - home.top, r: r.right - home.left, b: r.bottom - home.top }; };
+    const head = rel(section.querySelector(".promise-head")), cards = rel(pillars);
+    const small = innerWidth < 960;
+    room = small
+      ? { l: cards.l, r: cards.r, t: head.b + 4, b: cards.t - 10 }
+      : { l: head.r + 40, r: cards.r, t: head.t - 6, b: cards.t - 26 };
+    const want = small ? 6 : 8, apart = small ? 62 : 78;
+    const placed = [];
+    for (let tries = 0; placed.length < want && tries < 4000; tries++) {
+      const scale = .85 + random() * .4, w = 50 * scale, h = 22 * scale;
+      const x = room.l + random() * (room.r - room.l - w), y = room.t + random() * (room.b - room.t - h);
+      if (placed.some(q => Math.hypot(q.x - x, q.y - y) < apart)) continue;
+      placed.push({ x, y, scale });
+    }
+    for (const [i, { x, y, scale }] of placed.entries()) {
+      const pair = document.createElement("div");
+      pair.className = "pair";
+      pair.style.left = `${x}px`; pair.style.top = `${y}px`; pair.style.setProperty("--s", scale.toFixed(2));
+      pair.style.setProperty("--i", i);
+      pair.innerHTML = '<span class="eye"><span class="pupil"></span></span><span class="eye"><span class="pupil"></span></span>';
+      field.appendChild(pair);
+      const two = [...pair.children].map(el => ({ el, pupil: el.firstChild, x: 0, y: 0 }));
+      eyes.push(...two);
+      pairs.push({ el: pair, two, x, y, w: 50 * scale, h: 22 * scale, ox: 0, oy: 0 });
+      if (!still) blinkSoon(two, 600 + random() * 5000);
+    }
+    measure();
+  }
+  // Where each eye's centre is on the page when its pair is at home, and how far its pupil may travel.
+  function measure() {
+    for (const pair of pairs) {
+      pair.el.style.transform = "";
+      pair.ox = pair.oy = 0;
+      for (const eye of pair.two) {
+        const r = eye.el.getBoundingClientRect();
+        eye.hx = r.left + scrollX + r.width / 2; eye.hy = r.top + scrollY + r.height / 2;
+        eye.travel = (r.width - eye.pupil.offsetWidth) / 2 - 1.5;
+      }
+    }
+  }
+  const shut = on => { field.classList.toggle("shut", on); wink.classList.toggle("show", on); };
+  // A mouse closes them by moving over the cards; a finger by tapping one (a tap also "leaves" as it lifts).
+  pillars.addEventListener("pointerenter", e => { if (e.pointerType !== "touch") shut(true); });
+  pillars.addEventListener("pointerleave", e => { if (e.pointerType !== "touch") shut(false); });
+
+  // Each pair blinks on its own rhythm, every 2.5 to 6 seconds, now and then twice.
+  function blinkSoon(pair, wait) {
+    setTimeout(() => {
+      if (!pair[0].el.isConnected) return;  // planted again since (a resize)
+      const blink = () => {
+        if (field.classList.contains("shut")) return;
+        for (const eye of pair) eye.el.classList.add("blink");
+        setTimeout(() => { for (const eye of pair) eye.el.classList.remove("blink"); }, 140);
+      };
+      blink();
+      if (Math.random() < .2) setTimeout(blink, 320);
+      blinkSoon(pair, 2500 + Math.random() * 3500);
+    }, wait);
+  }
+
+  // --- the trees ----------------------------------------------------------------------------------
+  const grove = document.querySelector(".grove");
+  const trees = [...grove.querySelectorAll("img")].map(el => ({ el, lean: 0 }));
+
+  // --- where to look ------------------------------------------------------------------------------
+  addEventListener("pointermove", e => { pointer.cx = e.clientX; pointer.cy = e.clientY; pointer.seen = true; }, { passive: true });
+  addEventListener("pointerdown", e => {
+    pointer.cx = e.clientX; pointer.cy = e.clientY; pointer.seen = true;
+    if (e.pointerType === "touch") { pointer.at = performance.now(); shut(pillars.contains(e.target)); }
+  }, { passive: true });
+  document.addEventListener("pointerleave", () => { pointer.seen = false; });
+
+  let wander = { x: 0, y: 0 }, wanderAt = 0;
+  const visible = new Set();
+  new IntersectionObserver(entries => entries.forEach(e => e.isIntersecting ? visible.add(e.target) : visible.delete(e.target)))
+    .observe(section);
+  const groveSeen = new IntersectionObserver(entries => entries.forEach(e => e.isIntersecting ? visible.add(e.target) : visible.delete(e.target)));
+  groveSeen.observe(grove);
+
+  function frame(time) {
+    requestAnimationFrame(frame);
+    if (visible.has(section)) {
+      if (touch && time > wanderAt) {  // no cursor: the eyes look about on their own
+        wander = { x: scrollX + Math.random() * innerWidth, y: scrollY + Math.random() * innerHeight };
+        wanderAt = time + 1800 + Math.random() * 2200;
+      }
+      const following = !touch || time - pointer.at < FOLLOW_TOUCH;
+      const tx = following ? pointer.cx + scrollX : wander.x, ty = following ? pointer.cy + scrollY : wander.y;
+      // Where each pair wants to be: away from a cursor that's too close (a real one, not the phone's idle
+      // glances), else home; kept on their patch of dark, so never over the words.
+      const keepIn = (pair, gx, gy) => [Math.max(room.l - pair.x, Math.min(room.r - pair.w - pair.x, gx)),
+                                        Math.max(room.t - pair.y, Math.min(room.b - pair.h - pair.y, gy))];
+      for (const pair of pairs) {
+        const [a, b] = pair.two;
+        const cx = (a.hx + b.hx) / 2 + pair.ox, cy = (a.hy + b.hy) / 2 + pair.oy;
+        pair.d = Math.hypot(tx - cx, ty - cy) || 1;
+        let gx = 0, gy = 0;
+        if (following && pointer.seen && pair.d < FLEE) {
+          const push = (1 - pair.d / FLEE) * PUSH;
+          gx = pair.ox + (cx - tx) / pair.d * push; gy = pair.oy + (cy - ty) / pair.d * push;
+        }
+        [pair.gx, pair.gy] = keepIn(pair, gx, gy);
+      }
+      // Running, they don't pile onto each other: those spots are eased apart until no two pairs overlap.
+      for (let pass = 0; pass < 6; pass++) {
+        for (let i = 0; i < pairs.length; i++) for (let j = 0; j < i; j++) {
+          const p = pairs[i], q = pairs[j];
+          const dx = (p.x + p.gx + p.w / 2) - (q.x + q.gx + q.w / 2), dy = (p.y + p.gy + p.h / 2) - (q.y + q.gy + q.h / 2);
+          const ox = (p.w + q.w) / 2 + 8 - Math.abs(dx), oy = (p.h + q.h) / 2 + 8 - Math.abs(dy);
+          if (ox <= 0 || oy <= 0) continue;
+          // Apart along whichever way is shorter, half each.
+          if (ox < oy) { const m = Math.sign(dx || 1) * ox / 2; [p.gx, p.gy] = keepIn(p, p.gx + m, p.gy); [q.gx, q.gy] = keepIn(q, q.gx - m, q.gy); }
+          else { const m = Math.sign(dy || 1) * oy / 2; [p.gx, p.gy] = keepIn(p, p.gx, p.gy + m); [q.gx, q.gy] = keepIn(q, q.gx, q.gy - m); }
+        }
+      }
+      for (const pair of pairs) {
+        const running = pair.gx || pair.gy;
+        pair.ox = lerp(pair.ox, pair.gx, running ? .2 : .04);
+        pair.oy = lerp(pair.oy, pair.gy, running ? .2 : .04);
+        pair.el.style.transform = `translate(${pair.ox.toFixed(1)}px, ${pair.oy.toFixed(1)}px)`;
+        const d = pair.d;
+        // Eyes in the dark: they come out as you come near.
+        pair.el.style.opacity = (.1 + .9 * Math.max(0, 1 - d / 320)).toFixed(3);
+        for (const eye of pair.two) {
+          // Straight at the target: the pupil goes to the rim in its direction, nearer only when the target
+          // is right over the eye. They keep an eye on you as they run.
+          const ex = tx - (eye.hx + pair.ox), ey = ty - (eye.hy + pair.oy), e = Math.hypot(ex, ey) || 1;
+          const reach = Math.min(1, e / 40) * eye.travel;
+          eye.x = lerp(eye.x, ex / e * reach, .25);
+          eye.y = lerp(eye.y, ey / e * reach, .25);
+          eye.pupil.style.transform = `translate(${eye.x.toFixed(2)}px, ${eye.y.toFixed(2)}px)`;
+        }
+      }
+    }
+    if (visible.has(grove)) {
+      trees.forEach((tree, i) => {
+        let goal = Math.sin(time / 1400 + i * 1.3) * (touch ? 1.6 : .6);  // a breath of wind
+        if (pointer.seen && (!touch || time - pointer.at < FOLLOW_TOUCH)) {
+          const box = tree.el.getBoundingClientRect();
+          const dx = pointer.cx - (box.left + box.width / 2), dy = pointer.cy - (box.top + box.height);
+          const near = Math.max(0, 1 - Math.hypot(dx, dy) / 1100);
+          goal += Math.max(-1, Math.min(1, dx / 220)) * 16 * near;
+        }
+        tree.lean = lerp(tree.lean, goal, .08);
+        tree.el.style.transform = `skewX(${(-tree.lean).toFixed(2)}deg)`;
+      });
+    }
+  }
+
+  plant();
+  addEventListener("resize", () => { clearTimeout(plant.soon); plant.soon = setTimeout(plant, 150); });
+  addEventListener("load", measure);  // once fonts and pictures have settled the layout
+  if (!still) requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
