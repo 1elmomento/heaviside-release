@@ -144,7 +144,6 @@ h1 em { font-style: normal; background: linear-gradient(90deg, #8fc1ff, #b5a6ff)
 .system p { font-size: 14px; margin-bottom: 18px; min-height: 42px; }
 .system > a { margin-top: auto; display: block; text-align: center; padding: 12px; border-radius: 12px; font-weight: 700; font-size: 15px; text-decoration: none; color: white;
   background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
-.beta { margin-top: 26px; font-size: 14px; color: var(--muted); }
 .system p a { color: var(--accent); text-decoration: none; }
 .system p a:hover { text-decoration: underline; }
 .news { margin: 30px auto 0; display: inline-flex; align-items: center; gap: 10px; padding: 12px 18px; border-radius: 999px; border: 1px solid var(--line); color: var(--soft); font-size: 14px; }
@@ -188,13 +187,13 @@ footer .brand { font-size: 16px; } footer .brand img { width: 26px; height: 26px
   </nav>
   <section class="hero">
     <div>
-      <div class="eyebrow">For your Telegram account · beta</div>
+      <div class="eyebrow">For your Telegram account</div>
       <h1>Your friendships,<br><em>seen clearly.</em></h1>
       <p class="lead">Heaviside grows every private chat into a tree from its own history — who's drifting, who needs a word,
         who's always there. It reads channels as books and clears the noise in a click. All of it on your computer; nothing leaves it.</p>
       <div class="actions">
-        <a class="download" href="#download">⤓ Download the beta</a>
-        <div class="platforms">Windows · macOS · Linux — free, in beta</div>
+        <a class="download" href="#download">⤓ Download</a>
+        <div class="platforms">Windows · macOS · Linux — free</div>
       </div>
       <div class="promise"><span>No account with us</span><span>No servers</span><span>No AI reads your chats</span></div>
     </div>
@@ -371,16 +370,14 @@ footer .brand { font-size: 16px; } footer .brand img { width: 26px; height: 26px
 <!-- 7 · download -->
 <section id="download" class="get">
   <div class="wrap">
-    <div class="eyebrow">Download · <span data-version>1.0.0-beta.2</span></div>
-    <h2>Try the beta.</h2>
-    <p class="lead">Free. The first time, you make your own Telegram API keys — about two minutes, and the app shows you how.
-      After that, signing in takes only your phone number.</p>
+    <div class="eyebrow">Download · <span data-version>1.0.0</span></div>
+    <h2>Get Heaviside.</h2>
+    <p class="lead">Free. Signing in takes only your phone number and the code Telegram sends you.</p>
     <div class="systems">
-      <div class="system"><h3>Windows</h3><p>Installer, or a <a href="https://github.com/1elmomento/heaviside-release/releases/download/v1.0.0-beta.2/Heaviside-1.0.0-beta.2-Windows-portable.zip" data-download="windows-zip">portable zip</a> that runs without installing.</p><a href="https://github.com/1elmomento/heaviside-release/releases/download/v1.0.0-beta.2/Heaviside-1.0.0-beta.2-Setup.exe" data-download="windows">Download for Windows</a></div>
-      <div class="system"><h3>macOS</h3><p>For Macs with Apple chips (M1 and later). Open the disk image and drag Heaviside to Applications.</p><a href="https://github.com/1elmomento/heaviside-release/releases/download/v1.0.0-beta.2/Heaviside-1.0.0-beta.2-macOS-AppleSilicon.dmg" data-download="macos">Download for macOS</a></div>
-      <div class="system"><h3>Linux</h3><p>A Debian package for Debian 12 and later, and Ubuntu 24.04 and later.</p><a href="https://github.com/1elmomento/heaviside-release/releases/download/v1.0.0-beta.2/Heaviside-1.0.0-beta.2-Debian-amd64.deb" data-download="linux">Download for Linux</a></div>
+      <div class="system"><h3>Windows</h3><p>Installer, or a <a href="https://github.com/1elmomento/heaviside-release/releases/download/v1.0.0/Heaviside-1.0.0-Windows-portable.zip" data-download="windows-zip">portable zip</a> that runs without installing.</p><a href="https://github.com/1elmomento/heaviside-release/releases/download/v1.0.0/Heaviside-1.0.0-Setup.exe" data-download="windows">Download for Windows</a></div>
+      <div class="system"><h3>macOS</h3><p>For Macs with Apple chips (M1 and later). Open the disk image and drag Heaviside to Applications.</p><a href="https://github.com/1elmomento/heaviside-release/releases/download/v1.0.0/Heaviside-1.0.0-macOS-AppleSilicon.dmg" data-download="macos">Download for macOS</a></div>
+      <div class="system"><h3>Linux</h3><p>A Debian package for Debian 12 and later, and Ubuntu 24.04 and later.</p><a href="https://github.com/1elmomento/heaviside-release/releases/download/v1.0.0/Heaviside-1.0.0-Debian-amd64.deb" data-download="linux">Download for Linux</a></div>
     </div>
-    <p class="beta">It's a beta: things may break, and your feedback shapes what comes next.</p>
     <div class="news"><a href="https://github.com/1elmomento/heaviside-release/releases">Every version, and what changed</a></div>
   </div>
 </section>
@@ -405,12 +402,11 @@ footer .brand { font-size: 16px; } footer .brand img { width: 26px; height: 26px
         <p>Turn on your VPN. Heaviside tries every way to Telegram at once — your system's proxy settings, a VPN app's local proxy
           (v2rayN, Nekoray, Hiddify, Clash), or a direct connection through a VPN that carries all traffic — and uses the first that answers.
           You can also set a proxy of your own.</p></details>
-      <details><summary>Why does it ask for API keys?</summary>
-        <p>Telegram asks every app that works with an account for keys of its own. You make yours once at my.telegram.org, in about
-          two minutes, and the sign-in screen shows you each step. They stay on your computer; after that, signing in takes only your
-          phone number.</p></details>
+      <details><summary>Do I need API keys?</summary>
+        <p>No. Heaviside has its own, so you sign in with your phone number only. If you'd rather use keys of your own from
+          my.telegram.org, choose <b>Use your own API keys</b> on the sign-in screen.</p></details>
       <details><summary>Windows or macOS warns me when I open it</summary>
-        <p>The beta isn't signed with a paid certificate yet, so the system can't vouch for it. On Windows, choose <b>More info</b>, then
+        <p>Heaviside isn't signed with a paid certificate yet, so the system can't vouch for it. On Windows, choose <b>More info</b>, then
           <b>Run anyway</b>. On a Mac, open it once, then go to System Settings → Privacy &amp; Security and choose <b>Open Anyway</b>.</p></details>
       <details><summary>What will it cost?</summary>
         <p>Nothing. Heaviside is free: no paid version, no account with us, no ads.</p></details>
